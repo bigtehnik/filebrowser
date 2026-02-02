@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  onlyoffice:
+    image: onlyoffice/documentserver-de
+    container_name: onlyoffice
+    ports:
+      - "5521:80"   # порт для браузера
+    environment:
+      - JWT_ENABLED=true
+      - JWT_SECRET=933eaa2f72b0de306af3cd9953e94ba87a4dee24028db0fc815ba89a19d96763
+      - ALLOW_PRIVATE_IP_ADDRESS=true  # если используешь локальную сеть
+    restart: always
+    networks:
+      - shared_net
+
+  filebrowser:
+    image: gtstef/filebrowser:stable
+    container_name: filebrowser
+    environment:
+      FILEBROWSER_ADMIN_PASSWORD: admin33
+    volumes:
+      - /opt:/srv/                       # путь к файлам
+      - ./data/config.yaml:/var/opt/fb/config.yaml
+    ports:
+      - "8030:80"
+    restart: unless-stopped
+    networks:
+      - shared_net
+
+networks:
+  shared_net:
+    driver: bridge
